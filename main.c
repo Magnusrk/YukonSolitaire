@@ -349,8 +349,9 @@ int handleInput(){
     strcpy(lastCommand, in);
     char* comm = strtok(in, " ");
 
+
     if(strcmp(comm, "LD") == 0){
-        status = loadCardDeck(strtok(NULL, " "));
+        status = loadCardDeck(strtok("Card.txt", " "));
     } else if(strcmp(comm, "SD") == 0){
         status = saveCardDeck(strtok(NULL, " "));
     } else if(strcmp(comm, "SW") == 0){
