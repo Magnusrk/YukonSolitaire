@@ -121,6 +121,10 @@ struct linkedList C5;
 struct linkedList C6;
 struct linkedList C7;
 
+enum gamePhase{STARTUP, PLAY};
+
+enum gamePhase phase = STARTUP;
+
 //last command
 char lastCommand[20];
 
@@ -278,14 +282,6 @@ char* loadCardDeck(char* name){
 
     struct node *current = A.head;
 
-    struct node *current1 = C1.head;
-    struct node *current2 = C2.head;
-    struct node *current3 = C3.head;
-    struct node *current4 = C4.head;
-    struct node *current5 = C5.head;
-    struct node *current6 = C6.head;
-    struct node *current7 = C7.head;
-
     while (fgets(line, sizeof (line), filePointer)){
         struct node *newCard = (struct node*) malloc(sizeof (struct node));
         switch (line[0]) {
@@ -372,6 +368,81 @@ char* splitCards(char* splitLine){
     return "test";
 }
 
+int columnIndexCalculation(int cardIndex){
+    int index = cardIndex%7;
+    if(index == 0){
+        index = 6;
+    } else{
+        index-=1;
+    }
+
+    return index;
+}
+
+char* startPlayPhase(){
+
+
+    struct node *newCard = A.head;
+    if(newCard == NULL){
+        return "Error: No deck loaded";
+    }
+
+    phase = PLAY;
+    C1.head = NULL;
+    C2.head = NULL;
+    C3.head = NULL;
+    C4.head = NULL;
+    C5.head = NULL;
+    C6.head = NULL;
+    C7.head = NULL;
+
+    int caps[] = {1,6,7,8,9,10,11};
+    int cardAmounts[] = {0,0,0,0,0,0,0};
+
+    int cardIndex = 1;
+    do{
+        if(cardIndex > 1){
+            newCard= newCard->next;
+        }
+        while(cardAmounts[columnIndexCalculation(cardIndex)] >= caps[columnIndexCalculation(cardIndex)]){
+            cardIndex +=1;
+        }
+
+        int columnIndex = columnIndexCalculation(cardIndex);
+
+        switch (columnIndex) {
+            case 0:
+                insertLast(&C1, newCard->cardValue, newCard->suit, (cardAmounts[columnIndex] >= columnIndex));
+                break;
+            case 1:
+                insertLast(&C2, newCard->cardValue, newCard->suit, (cardAmounts[columnIndex] >= columnIndex));
+                break;
+            case 2:
+                insertLast(&C3, newCard->cardValue, newCard->suit, (cardAmounts[columnIndex] >= columnIndex));
+                break;
+            case 3:
+                insertLast(&C4, newCard->cardValue, newCard->suit, (cardAmounts[columnIndex] >= columnIndex));
+                break;
+            case 4:
+                insertLast(&C5, newCard->cardValue, newCard->suit, (cardAmounts[columnIndex] >= columnIndex));
+                break;
+            case 5:
+                insertLast(&C6, newCard->cardValue, newCard->suit, (cardAmounts[columnIndex] >= columnIndex));
+                break;
+            default:
+                insertLast(&C7, newCard->cardValue, newCard->suit, (cardAmounts[columnIndex] >= columnIndex));
+                break;
+
+        }
+        cardAmounts[columnIndex] +=1;
+        cardIndex += 1;
+
+    } while (newCard->next != NULL);
+
+
+    return "Game started";
+}
+
 // Ask user for command and handles (some of it)
 int handleInput(){
     printf("\nINPUT > ");
@@ -381,19 +452,21 @@ int handleInput(){
     char* comm = strtok(in, " ");
 
 
-    if(strcmp(comm, "LD") == 0){
+    if(strcmp(comm, "LD") == 0 && phase==STARTUP){
         status = loadCardDeck(strtok(NULL, " "));
-    } else if(strcmp(comm, "SD") == 0){
+    } else if(strcmp(comm, "SD") == 0 && phase==STARTUP){
         status = saveCardDeck(strtok(NULL, " "));
     } else if(strcmp(comm, "SW") == 0){
         status = showCards();
-    }else if(strcmp(comm, "QQ") == 0){
+    }else if(strcmp(comm, "QQ") == 0 && phase==STARTUP){
         return  1;
-    } else if (strcmp(comm, "SL") == 0){
+    } else if(strcmp(comm, "P") == 0){
+        status = startPlayPhase();
+    }else if (strcmp(comm, "SL") == 0){
         status = splitCards(strtok(NULL, " "));
-    }else{
-            status = "Unknown command";
-        }
+    } else{
+        status = "Unknown command";
+    }
     return 0;
 }
 
