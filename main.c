@@ -372,12 +372,16 @@ char* saveCardDeck(char* filename){
 }
 
 char* splitCards(char* splitLine){
+
     int line;
     sscanf(splitLine, "%d", &line);
     if(line >= 52 || line <= 0){
         return "The line where to split the deck should be between 1 and 51";
     }
     struct node *el = A.head;
+    pile1.head = NULL;
+    pile2.head = NULL;
+    splitPile.head = NULL;
 
     for (int i = 0; i < line; ++i) {
         insert(&pile1,el->cardValue,el->suit,el->visible);
@@ -419,7 +423,7 @@ char* splitCards(char* splitLine){
     }
 
     A.head = splitPile.head;
-    printLinkedList(A);
+    //printLinkedList(A);
     return "";
 }
 
@@ -516,15 +520,93 @@ bool isMoveCommand(char* cm){
 
     } else {
         if(l != 6){
-            if(cm[6] != ':'){
-                return false;
-            }
+            return false;
         }
     }
     return true;
+}
 
 
 
+char* moveCards(char* cm){
+    int l = strlen(cm);
+
+    struct linkedList *sourcePile;
+    struct linkedList *targetPile;
+    if(l == 9){
+        int from = cm[1] - '0';
+        int to = cm[8] - '0';
+
+        switch (from) {
+            case 1:
+                sourcePile = &C1;
+                break;
+            case 2:
+                sourcePile = &C2;
+                break;
+            case 3:
+                sourcePile = &C3;
+                break;
+            case 4:
+                sourcePile = &C4;
+                break;
+            case 5:
+                sourcePile = &C5;
+                break;
+            case 6:
+                sourcePile = &C6;
+                break;
+            default:
+                sourcePile = &C7;
+                break;
+        }
+
+        switch (to) {
+            case 1:
+                targetPile = &C1;
+                break;
+            case 2:
+                targetPile = &C2;
+                break;
+            case 3:
+                targetPile = &C3;
+                break;
+            case 4:
+                targetPile = &C4;
+                break;
+            case 5:
+                targetPile = &C5;
+                break;
+            case 6:
+                targetPile = &C6;
+                break;
+            default:
+                targetPile = &C7;
+                break;
+        }
+
+        struct node *temp = sourcePile->head;
+        sourcePile->head = NULL;
+        if(targetPile->head == NULL){
+            targetPile->head = temp;
+        } else{
+            struct node *current = targetPile->head;
+            while(current->next != NULL){
+                current = current->next;
+            }
+            current->next = temp;
+        }
+
+
+
+
+
+    } else{
+        return "Not implemented";
+    }
+
+
+    return "Moved cards";
 }
 
 // Ask user for command and handles (some of it)
@@ -555,7 +637,8 @@ int handleInput(){
         }
     } else if(phase == PLAY){ //PLAY COMMANDS
         if(isMoveCommand(in)){
-            status = "Moving player";
+            status = moveCards(in);
+
         } else if(strcmp(in, "Q") == 0 ){
             phase = STARTUP;
             status = "Exited current game";
