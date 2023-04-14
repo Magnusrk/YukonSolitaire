@@ -410,7 +410,8 @@ char* splitCards(char* splitLine){
         }
     }
 
-    printLinkedList(splitPile);
+    A.head = splitPile.head;
+    printLinkedList(A);
     return "";
 }
 
