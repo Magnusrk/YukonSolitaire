@@ -284,7 +284,15 @@ char* loadCardDeck(char* name){
     char line[256];
     int cardIndex = 1;
 
-    struct node *current = A.head;
+    A.head = NULL;
+    C1.head = NULL;
+    C2.head = NULL;
+    C3.head = NULL;
+    C4.head = NULL;
+    C5.head = NULL;
+    C6.head = NULL;
+    C7.head = NULL;
+
 
     while (fgets(line, sizeof (line), filePointer)){
         struct node *newCard = (struct node*) malloc(sizeof (struct node));
@@ -490,29 +498,71 @@ char* startPlayPhase(){
     return "Game started";
 }
 
+bool isMoveCommand(char* cm){
+    int l = strlen(cm);
+    if(l != 6 && l != 9){
+        return false;
+    }
+    if(cm[2] != '-' || cm[3] != '>'){
+        if(l != 9){
+            return false;
+        }
+        if(cm[5] != '-' || cm[6] != '>'){
+            return false;
+        }
+        if(cm[2] != ':'){
+            return false;
+        }
+
+    } else {
+        if(l != 6){
+            if(cm[6] != ':'){
+                return false;
+            }
+        }
+    }
+    return true;
+
+
+
+}
+
 // Ask user for command and handles (some of it)
 int handleInput(){
     printf("\nINPUT > ");
     char in[20];
     gets(in);
     strcpy(lastCommand, in);
-    char* comm = strtok(in, " ");
 
 
-    if(strcmp(comm, "LD") == 0 && phase==STARTUP){
-        status = loadCardDeck(strtok(NULL, " "));
-    } else if(strcmp(comm, "SD") == 0 && phase==STARTUP){
-        status = saveCardDeck(strtok(NULL, " "));
-    } else if(strcmp(comm, "SW") == 0){
-        status = showCards();
-    }else if(strcmp(comm, "QQ") == 0 && phase==STARTUP){
-        return  1;
-    } else if(strcmp(comm, "P") == 0){
-        status = startPlayPhase();
-    }else if (strcmp(comm, "SL") == 0){
-        status = splitCards(strtok(NULL, " "));
-    } else{
-        status = "Unknown command";
+    // STARTUP COMMANDS
+    if(phase == STARTUP){
+        char* comm = strtok(in, " ");
+        if(strcmp(comm, "LD") == 0 ){
+            status = loadCardDeck(strtok(NULL, " "));
+        } else if(strcmp(comm, "SD") == 0 ){
+            status = saveCardDeck(strtok(NULL, " "));
+        } else if(strcmp(comm, "SW") == 0){
+            status = showCards();
+        }else if(strcmp(comm, "QQ") == 0 ){
+            return  1;
+        } else if(strcmp(comm, "P") == 0){
+            status = startPlayPhase();
+        }else if (strcmp(comm, "SL") == 0){
+            status = splitCards(strtok(NULL, " "));
+        } else{
+            status = "Unknown command in startup phase";
+        }
+    } else if(phase == PLAY){ //PLAY COMMANDS
+        if(isMoveCommand(in)){
+            status = "Moving player";
+        } else if(strcmp(in, "Q") == 0 ){
+            phase = STARTUP;
+            status = "Exited current game";
+        }  else{
+            status = "Unknown command in play phase";
+        }
+
     }
     return 0;
 }
