@@ -398,7 +398,49 @@ char* loadCardDeck(char* name){
 
 // Should save the cards in the columns to a file
 char* saveCardDeck(char* filename){
-    return "NOT IMPLEMENTED";
+    FILE  *fb = fopen(filename, "w");
+    struct node *el = A.head;
+
+    while (el != NULL){
+        switch (el->cardValue) {
+            case 1:
+                putc('A', fb);
+                break;
+            case 10:
+                putc('T', fb);
+                break;
+            case 11:
+                putc('J', fb);
+                break;
+            case 12:
+                putc('Q', fb);
+                break;
+            case 13:
+                putc('K', fb);
+                break;
+            default:
+                fprintf(fb, "%d", el->cardValue);
+                break;
+        }
+        switch (el->suit) {
+            case hearts:
+                putc('H',fb);
+                break;
+            case diamonds:
+                putc('D',fb);
+                break;
+            case spades:
+                putc('S',fb);
+                break;
+            case clubs:
+                putc('C',fb);
+                break;
+        }
+        putc('\n', fb); // Add a newline character
+        el = el->next;
+    }
+    fclose(fb);
+    return "Game saved";
 }
 
 char* splitCards(char* splitLine){
