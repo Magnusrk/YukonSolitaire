@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 //enum suitType with the different suits
 enum suitType{hearts, diamonds, spades, clubs};
@@ -60,10 +61,14 @@ void insertLast(struct linkedList *list, int cardValue, enum suitType suit, bool
 
 void insertRandom(struct linkedList *list, int cardValue, enum suitType suit, bool visible){
     int post = rand() %52;
+    printf("%d", post);
+    printf("%s", " ");
     struct node *el= list->head;
+    /*
     while (el != NULL){
         el=el->next;
     }
+     */
     struct node* previous= NULL;
     for (int i = 0; i < post && el != NULL; ++i) {
         previous=el;
@@ -553,7 +558,13 @@ bool isMoveCommand(char* cm){
 }
 
 char* shuffleRandom(){
-
+    struct node *el=A.head;
+    while(el!= NULL) {
+        insertRandom(&shufflePile,el->cardValue,el->suit,el->visible);
+        el=el->next;
+    }
+    A.head=shufflePile.head;
+    printLinkedList(shufflePile);
 }
 
 // Ask user for command and handles (some of it)
@@ -579,7 +590,10 @@ int handleInput(){
             status = startPlayPhase();
         }else if (strcmp(comm, "SL") == 0){
             status = splitCards(strtok(NULL, " "));
-        } else{
+        }else if(strcmp(comm,"SR")==0) {
+            shuffleRandom();
+        }
+        else{
             status = "Unknown command in startup phase";
         }
     } else if(phase == PLAY){ //PLAY COMMANDS
@@ -608,6 +622,7 @@ void commandLoop(){
 
 
 int main() {
+    srand(time(NULL));
     commandLoop();
 
     return 0;
