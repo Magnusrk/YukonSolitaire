@@ -113,6 +113,10 @@ struct node* deleteElement(struct linkedList *list, int cardValue, enum suitType
 //Maybe it would be better to just have one??
 // But then it might make some operations a bit harder idk
 struct linkedList A;
+struct  linkedList pile1;
+struct  linkedList pile2;
+struct linkedList splitPile;
+struct linkedList shufflePile;
 struct linkedList C1;
 struct linkedList C2;
 struct linkedList C3;
@@ -366,10 +370,52 @@ char* saveCardDeck(char* filename){
 char* splitCards(char* splitLine){
     int line;
     sscanf(splitLine, "%d", &line);
-    for (int i = 0; i < line; ++i) {
-
+    if(line >= 52 || line <= 0){
+        return "The line where to split the deck should be between 1 and 51";
     }
-    return "test";
+    struct node *el = A.head;
+
+    for (int i = 0; i < line; ++i) {
+        insert(&pile1,el->cardValue,el->suit,el->visible);
+        el = el->next;
+    }
+    while (el != NULL){
+        insert(&pile2,el->cardValue,el->suit,el->visible);
+        el = el->next;
+    }
+
+    struct node *newEl = pile1.head;
+    struct node *newEl2 = pile2.head;
+    bool pileOne = true;
+    while (newEl != NULL && newEl2 != NULL) {
+        if (pileOne == true) {
+        insert(&splitPile, newEl->cardValue, newEl->suit, newEl->visible);
+        newEl = newEl->next;
+        if (newEl2 != NULL) {
+            pileOne = false;
+        }
+        } else {
+            insert(&splitPile, newEl2->cardValue, newEl2->suit, newEl2->visible);
+            newEl2 = newEl2->next;
+            if (newEl != NULL) {
+                pileOne = true;
+            }
+        }
+    }
+    if (newEl != NULL){
+        while (newEl != NULL){
+            insertLast(&splitPile, newEl->cardValue, newEl->suit, newEl->visible);
+            newEl = newEl->next;
+        }
+    } else if (newEl2 != NULL){
+        while (newEl2 != NULL){
+            insertLast(&splitPile, newEl2->cardValue, newEl2->suit, newEl2->visible);
+            newEl2 = newEl2->next;
+        }
+    }
+
+    printLinkedList(splitPile);
+    return "";
 }
 
 // Ask user for command and handles (some of it)
