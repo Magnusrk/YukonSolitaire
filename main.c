@@ -94,6 +94,7 @@ struct node* deleteElement(struct linkedList *list, int cardValue, enum suitType
 //7 linked lists one for each column.
 //Maybe it would be better to just have one??
 // But then it might make some operations a bit harder idk
+struct linkedList A;
 struct linkedList C1;
 struct linkedList C2;
 struct linkedList C3;
@@ -257,6 +258,8 @@ char* loadCardDeck(char* name){
     char line[256];
     int cardIndex = 1;
 
+    struct node *current = A.head;
+
     struct node *current1 = C1.head;
     struct node *current2 = C2.head;
     struct node *current3 = C3.head;
@@ -341,6 +344,15 @@ char* saveCardDeck(char* filename){
     return "NOT IMPLEMENTED";
 }
 
+char* splitCards(char* splitLine){
+    int line;
+    sscanf(splitLine, "%d", &line);
+    for (int i = 0; i < line; ++i) {
+
+    }
+    return "test";
+}
+
 // Ask user for command and handles (some of it)
 int handleInput(){
     printf("\nINPUT > ");
@@ -358,9 +370,11 @@ int handleInput(){
         status = showCards();
     }else if(strcmp(comm, "QQ") == 0){
         return  1;
-    } else{
-        status = "Unknown command";
-    }
+    } else if (strcmp(comm, "SL") == 0){
+        status = splitCards(strtok(NULL, " "));
+    }else{
+            status = "Unknown command";
+        }
     return 0;
 }
 
