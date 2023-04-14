@@ -325,6 +325,7 @@ char* loadCardDeck(char* name){
                 break;
         }
 
+        insertLast(&A, newCard->cardValue,newCard->suit, false);
 
         switch (cardIndex%7) {
             case 1:
