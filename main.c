@@ -58,6 +58,31 @@ void insertLast(struct linkedList *list, int cardValue, enum suitType suit, bool
     }
 }
 
+void insertRandom(struct linkedList *list, int cardValue, enum suitType suit, bool visible){
+    int post = rand() %52;
+    struct node *el= list->head;
+    while (el != NULL){
+        el=el->next;
+    }
+    struct node* previous= NULL;
+    for (int i = 0; i < post && el != NULL; ++i) {
+        previous=el;
+        el=el->next;
+    }
+    struct node *newNodeLink = (struct node*) malloc(sizeof (struct node));
+    newNodeLink->cardValue = cardValue;
+    newNodeLink->suit = suit;
+    newNodeLink->next = NULL;
+    newNodeLink->visible = visible;
+
+    newNodeLink->next=el;
+    if (previous==NULL){
+        list->head=newNodeLink;
+    } else{
+        previous->next=newNodeLink;
+    }
+}
+
 //Delete first (youngest) element
 struct node* deleteFirst(struct linkedList *list){
     struct node *deletedElement = list->head;
@@ -488,6 +513,10 @@ char* startPlayPhase(){
 
 
     return "Game started";
+}
+
+char* shuffleRandom(){
+
 }
 
 // Ask user for command and handles (some of it)
