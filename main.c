@@ -40,6 +40,24 @@ void insert(struct linkedList *list, int cardValue, enum suitType suit, bool vis
     newNodeLink->visible = visible;
     list->head = newNodeLink;
 }
+
+void insertLast(struct linkedList *list, int cardValue, enum suitType suit, bool visible){
+    struct node *newNodeLink = (struct node*) malloc(sizeof (struct node));
+    newNodeLink->cardValue = cardValue;
+    newNodeLink->suit = suit;
+    newNodeLink->next = NULL;
+    newNodeLink->visible = visible;
+    if(list->head == NULL){
+        list->head = newNodeLink;
+    } else{
+        struct node *lastElement = list->head;
+        while(lastElement->next != NULL){
+            lastElement = lastElement->next;
+        }
+        lastElement->next = newNodeLink;
+    }
+}
+
 //Delete first (youngest) element
 struct node* deleteFirst(struct linkedList *list){
     struct node *deletedElement = list->head;
@@ -310,25 +328,25 @@ char* loadCardDeck(char* name){
 
         switch (cardIndex%7) {
             case 1:
-                insert(&C1, newCard->cardValue, newCard->suit, false);
+                insertLast(&C1, newCard->cardValue, newCard->suit, false);
                 break;
             case 2:
-                insert(&C2, newCard->cardValue, newCard->suit, false);
+                insertLast(&C2, newCard->cardValue, newCard->suit, false);
                 break;
             case 3:
-                insert(&C3, newCard->cardValue, newCard->suit, false);
+                insertLast(&C3, newCard->cardValue, newCard->suit, false);
                 break;
             case 4:
-                insert(&C4, newCard->cardValue, newCard->suit, false);
+                insertLast(&C4, newCard->cardValue, newCard->suit, false);
                 break;
             case 5:
-                insert(&C5, newCard->cardValue, newCard->suit, false);
+                insertLast(&C5, newCard->cardValue, newCard->suit, false);
                 break;
             case 6:
-                insert(&C6, newCard->cardValue, newCard->suit, false);
+                insertLast(&C6, newCard->cardValue, newCard->suit, false);
                 break;
             default:
-                insert(&C7, newCard->cardValue, newCard->suit, false);
+                insertLast(&C7, newCard->cardValue, newCard->suit, false);
                 break;
 
         }
@@ -363,7 +381,7 @@ int handleInput(){
 
 
     if(strcmp(comm, "LD") == 0){
-        status = loadCardDeck(strtok("Card.txt", " "));
+        status = loadCardDeck(strtok(NULL, " "));
     } else if(strcmp(comm, "SD") == 0){
         status = saveCardDeck(strtok(NULL, " "));
     } else if(strcmp(comm, "SW") == 0){
