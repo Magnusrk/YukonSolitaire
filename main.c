@@ -641,6 +641,7 @@ char* moveCards(char* cm){
 
 char* shuffleRandom(){
     struct node *el=A.head;
+    shufflePile.head = NULL;
     while(el!= NULL) {
         insertRandom(&shufflePile,el->cardValue,el->suit,el->visible);
         el=el->next;
