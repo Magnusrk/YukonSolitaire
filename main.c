@@ -615,16 +615,59 @@ char* moveCards(char* cm){
                 break;
         }
 
-        struct node *temp = sourcePile->head;
-        sourcePile->head = NULL;
+
+        char *desiredCard;
+        desiredCard[0] = cm[3];
+        desiredCard[1] = cm[4];
+
+        enum suitType st;
+        int cardValue = 0;
+        switch (desiredCard[1]) {
+            case 'H':
+                st=hearts;
+                break;
+            case 'D':
+                st=diamonds;
+                break;
+            case 'C':
+                st=clubs;
+                break;
+            case 'S':
+                st=spades;
+                break;
+        }
+        switch (desiredCard[0]) {
+            case 'A':
+                cardValue = 1;
+                break;
+            case 'T':
+                cardValue = 10;
+                break;
+            case 'J':
+                cardValue = 11;
+                break;
+            case 'Q':
+                cardValue=12;
+                break;
+            case 'K':
+                cardValue = 13;
+                break;
+            default:
+                cardValue = desiredCard[0]-'0';
+                break;
+        }
+
+
+        //DOESNT WORK WITH DELETE, AS THE FOLLOWING ELEMENTS DONT FOLLOW ALONG.
+        struct node* card = deleteElement(sourcePile,cardValue,st);
         if(targetPile->head == NULL){
-            targetPile->head = temp;
+            targetPile->head = card;
         } else{
             struct node *current = targetPile->head;
             while(current->next != NULL){
                 current = current->next;
             }
-            current->next = temp;
+            current->next = card;
         }
 
 
