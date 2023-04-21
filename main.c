@@ -63,14 +63,7 @@ void insertLast(struct linkedList *list, int cardValue, enum suitType suit, bool
 
 void insertRandom(struct linkedList *list, int cardValue, enum suitType suit, bool visible){
     int post = rand() %52;
-    printf("%d", post);
-    printf("%s", " ");
     struct node *el= list->head;
-    /*
-    while (el != NULL){
-        el=el->next;
-    }
-     */
     struct node* previous= NULL;
     for (int i = 0; i < post && el != NULL; ++i) {
         previous=el;
@@ -243,7 +236,7 @@ void cardToString(char *str,struct node *card){
 
     }
 
-    char suitNames[4] = {'H','D','S','C'};
+    char suitNames[4] = {3,4,6,5};
     str[1] = suitNames[card->suit];
 
 
@@ -560,8 +553,6 @@ int columnIndexCalculation(int cardIndex){
 }
 
 char* startPlayPhase(){
-
-
     struct node *newCard = A.head;
     if(newCard == NULL){
         return "Error: No deck loaded";
@@ -867,7 +858,7 @@ int handleInput(){
             status = shuffleRandom();
         }
         else{
-            status = "Unknown command in startup phase";
+            status = "Error: Unknown command in startup phase";
         }
     } else if(phase == PLAY){ //PLAY COMMANDS
         if(isMoveCommand(in)){
@@ -877,7 +868,7 @@ int handleInput(){
             phase = STARTUP;
             status = "Exited current game";
         }  else{
-            status = "Unknown command in play phase";
+            status = "Error: Unknown command in play phase";
         }
 
     }
