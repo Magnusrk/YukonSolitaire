@@ -95,11 +95,13 @@ struct node* deleteFirst(struct linkedList *list){
     return deletedElement;
 }
 
-//Returns pointer to node(card) that matches card value and suit
-struct node* findElement(struct linkedList list, int cardValue, enum suitType suit){
-    struct node* el = list.head;
 
-    if(list.head == NULL){
+
+//Returns pointer to node(card) that matches card value and suit
+struct node* findElement(struct linkedList *list, int cardValue, enum suitType suit){
+    struct node* el = list->head;
+
+    if(list->head == NULL){
         return NULL;
     }
 
@@ -111,6 +113,45 @@ struct node* findElement(struct linkedList list, int cardValue, enum suitType su
         }
     }
     return el;
+}
+
+
+struct node* findLastElement(struct linkedList *list){
+    struct node* el = list->head;
+    if(el == NULL){
+        return NULL;
+    }
+
+    while (el->next != NULL){
+        el = el->next;
+    }
+    return  el;
+}
+
+
+//Delete from element (the given element and all the following)
+struct node* deleteFrom(struct linkedList *list, int cardValue, enum suitType suit){
+    struct node* el = list->head;
+    struct node* prev = NULL;
+    if(list->head == NULL){
+        return NULL;
+    }
+
+    while (el->cardValue != cardValue || el->suit != suit){
+        if(el->next == NULL){
+            return NULL;
+        } else{
+            prev = el;
+            el = el->next;
+        }
+    }
+    if(el == list->head){
+        list->head = NULL;
+    } else{
+        prev->next = NULL;
+    }
+    return el;
+
 }
 
 //Deletes element that matches card value and suit
@@ -163,7 +204,7 @@ enum gamePhase phase = STARTUP;
 char lastCommand[20];
 
 //Status message changed by the handleInput
-char* status;
+char* status = "Welcome to Yukon Solitare!";
 
 // Takes a node struct (card) and changes a str to match the representation of the card.
 // str is the pointer to the string. E.g. 7 of spades becomes 7S.
@@ -661,7 +702,7 @@ char* moveCards(char* cm){
         }
 
 
-        char *desiredCard;
+        char desiredCard[2];
         desiredCard[0] = cm[3];
         desiredCard[1] = cm[4];
 
@@ -701,10 +742,31 @@ char* moveCards(char* cm){
                 cardValue = desiredCard[0]-'0';
                 break;
         }
+        struct node* fromCard = findElement(sourcePile, cardValue, st);
+        struct node* toCard = findLastElement(targetPile);
+
+        if(fromCard == NULL || !fromCard->visible ){
+            return "No such card in source pile!";
+        } else{
+            if(fromCard->cardValue >= toCard->cardValue){
+                return "Source card must be lower that target card";
+            }
+            if((fromCard->suit == hearts || fromCard->suit == diamonds ) &&
+            (toCard->suit == hearts || toCard->suit == diamonds)){
+                    return "Unmatching suit types!";
+            }
+
+            if((fromCard->suit == spades || fromCard->suit == clubs ) &&
+               (toCard->suit == spades || toCard->suit == clubs)){
+                return "Unmatching suit types!";
+            }
+
+        }
+
 
 
         //DOESNT WORK WITH DELETE, AS THE FOLLOWING ELEMENTS DONT FOLLOW ALONG.
-        struct node* card = deleteElement(sourcePile,cardValue,st);
+        struct node* card = deleteFrom(sourcePile,cardValue,st);
         if(targetPile->head == NULL){
             targetPile->head = card;
         } else{
