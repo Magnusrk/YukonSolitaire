@@ -22,6 +22,7 @@ struct linkedList{
 };
 
 void updateCardPiles();
+bool checkWinCon();
 
 
 //Prints list (for debugging)
@@ -199,7 +200,7 @@ struct linkedList F2;
 struct linkedList F3;
 struct linkedList F4;
 
-enum gamePhase{STARTUP, PLAY};
+enum gamePhase{STARTUP, PLAY, WIN};
 
 enum gamePhase phase = STARTUP;
 
@@ -863,8 +864,19 @@ char* moveCards(char* cm){
         }
         current->next = card;
     }
+    if(!checkWinCon()) {
+        return "Moved cards";
+    } else {
+      return "You won!!!";
+    }
+}
 
-    return "Moved cards";
+bool checkWinCon(){
+    if(C1.head == NULL && C2.head == NULL && C3.head == NULL && C4.head == NULL && C5.head == NULL && C6.head == NULL && C7.head == NULL){
+        phase = WIN;
+        return true;
+    }
+    return false;
 }
 
 char* shuffleRandom(){
@@ -951,17 +963,21 @@ int handleInput(){
         else{
             status = "Error: Unknown command in startup phase";
         }
-    } else if(phase == PLAY){ //PLAY COMMANDS
-        if(isMoveCommand(in)){
+    } else if(phase == PLAY || phase == WIN){ //PLAY COMMANDS
+        if(isMoveCommand(in) && phase == PLAY) {
             status = moveCards(in);
-
-        } else if(strcmp(in, "Q") == 0 ){
+        } else if(strcmp(in, "QQ") == 0 ){
+            return  1;
+        }else if(strcmp(in, "Q") == 0 ){
             phase = STARTUP;
             status = "Exited current game";
-        }  else{
-            status = "Error: Unknown command in play phase";
+        } else {
+            if (phase == PLAY) {
+                status = "Error: Unknown command in play phase";
+            } else{
+                status = "Error: Unknown command in win phase";
+            }
         }
-
     }
     return 0;
 }
