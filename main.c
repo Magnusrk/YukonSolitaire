@@ -21,6 +21,8 @@ struct linkedList{
     struct node *head;
 };
 
+void updateCardPiles();
+
 
 //Prints list (for debugging)
 void printLinkedList(struct linkedList list){
@@ -451,7 +453,10 @@ char* splitCards(char* splitLine){
     int line;
     sscanf(splitLine, "%d", &line);
     if(line >= 52 || line <= 0){
-        return "The line where to split the deck should be between 1 and 51";
+        return "Error: The line where to split the deck should be between 1 and 51";
+    }
+    if(A.head == NULL){
+        return "Error: No deck loaded";
     }
     struct node *el = A.head;
     pile1.head = NULL;
@@ -498,8 +503,8 @@ char* splitCards(char* splitLine){
     }
 
     A.head = splitPile.head;
-    //printLinkedList(A);
-    return "";
+    updateCardPiles();
+    return "OK";
 }
 
 int columnIndexCalculation(int cardIndex){
@@ -703,7 +708,7 @@ char* moveCards(char* cm){
         }
 
 
-        //DOESNT WORK WITH DELETE, AS THE FOLLOWING ELEMENTS DONT FOLLOW ALONG.
+        //DOESN'T WORK WITH DELETE, AS THE FOLLOWING ELEMENTS DONT FOLLOW ALONG.
         struct node* card = deleteElement(sourcePile,cardValue,st);
         if(targetPile->head == NULL){
             targetPile->head = card;
@@ -715,10 +720,6 @@ char* moveCards(char* cm){
             current->next = card;
         }
 
-
-
-
-
     } else{
         return "Not implemented";
     }
@@ -728,6 +729,9 @@ char* moveCards(char* cm){
 }
 
 char* shuffleRandom(){
+    if(A.head == NULL){
+        return "Error: No deck loaded";
+    }
     struct node *el=A.head;
     shufflePile.head = NULL;
     while(el!= NULL) {
@@ -735,7 +739,48 @@ char* shuffleRandom(){
         el=el->next;
     }
     A.head=shufflePile.head;
-    printLinkedList(shufflePile);
+    updateCardPiles();
+    return "Ok";
+}
+
+void updateCardPiles(){
+    C1.head = NULL;
+    C2.head = NULL;
+    C3.head = NULL;
+    C4.head = NULL;
+    C5.head = NULL;
+    C6.head = NULL;
+    C7.head = NULL;
+
+    struct node *el = A.head;
+    int cardIndex = 1;
+    while (el != NULL){
+        switch (cardIndex%7) {
+            case 1:
+                insertLast(&C1, el->cardValue, el->suit, false);
+                break;
+            case 2:
+                insertLast(&C2, el->cardValue, el->suit, false);
+                break;
+            case 3:
+                insertLast(&C3, el->cardValue, el->suit, false);
+                break;
+            case 4:
+                insertLast(&C4, el->cardValue, el->suit, false);
+                break;
+            case 5:
+                insertLast(&C5, el->cardValue, el->suit, false);
+                break;
+            case 6:
+                insertLast(&C6, el->cardValue, el->suit, false);
+                break;
+            default:
+                insertLast(&C7, el->cardValue, el->suit, false);
+                break;
+        }
+        el = el->next;
+        cardIndex += 1;
+    }
 }
 
 // Ask user for command and handles (some of it)
@@ -762,7 +807,7 @@ int handleInput(){
         }else if (strcmp(comm, "SL") == 0){
             status = splitCards(strtok(NULL, " "));
         }else if(strcmp(comm,"SR")==0) {
-            shuffleRandom();
+            status = shuffleRandom();
         }
         else{
             status = "Unknown command in startup phase";
