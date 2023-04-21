@@ -209,7 +209,10 @@ void cardToString(char *str,struct node *card){
 
 //Prints the game like in the project 2 pdf description.
 void printGameBoard(){
+    printf("\n");
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\n");
+    printf("\n");
+
     bool hasMoreCards = true;
     struct node *column1 = C1.head;
     struct node *column2 = C2.head;
