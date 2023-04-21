@@ -145,6 +145,9 @@ struct node* deleteFrom(struct linkedList *list, int cardValue, enum suitType su
     } else{
         prev->next = NULL;
     }
+    if(prev != NULL){
+        prev->visible = true;
+    }
     return el;
 
 }
@@ -190,6 +193,11 @@ struct linkedList C4;
 struct linkedList C5;
 struct linkedList C6;
 struct linkedList C7;
+
+struct linkedList F1;
+struct linkedList F2;
+struct linkedList F3;
+struct linkedList F4;
 
 enum gamePhase{STARTUP, PLAY};
 
@@ -290,13 +298,38 @@ void printGameBoard(){
 
         printf("%s\t%s\t%s\t%s\t%s\t%s\t%s", c1txt,c2txt,c3txt,c4txt,c5txt,c6txt,c7txt);
         if(index == 0){
-            printf("\t\t[]\tF1");
+            if(F1.head == NULL){
+                printf("\t\t[]\tF1");
+            } else{
+                char ftxt[] = "  ";
+                cardToString(&ftxt, findLastElement(&F1));
+                printf("\t\t%s\tF1", ftxt);
+            }
+
         } else if(index == 1){
-            printf("\t\t[]\tF2");
+            if(F2.head == NULL){
+                printf("\t\t[]\tF2");
+            }else{
+                char ftxt[] = "  ";
+                cardToString(&ftxt, findLastElement(&F2));
+                printf("\t\t%s\tF2", ftxt);
+            }
         } else if(index == 2){
-            printf("\t\t[]\tF3");
+            if(F3.head == NULL){
+                printf("\t\t[]\tF3");
+            }else{
+                char ftxt[] = "  ";
+                cardToString(&ftxt, findLastElement(&F3));
+                printf("\t\t%s\tF3", ftxt);
+            }
         } else if(index == 3){
-            printf("\t\t[]\tF3");
+            if(F4.head == NULL){
+                printf("\t\t[]\tF4");
+            }else{
+                char ftxt[] = "  ";
+                cardToString(&ftxt, findLastElement(&F4));
+                printf("\t\t%s\tF€", ftxt);
+            }
         }
 
         printf("\n");
@@ -635,6 +668,12 @@ bool isMoveCommand(char* cm){
             return false;
         }
     }
+
+    if(l == 6){
+        if(cm[0] ==  cm[4] ){
+            return false;
+        }
+    }
     return true;
 }
 
@@ -645,65 +684,95 @@ char* moveCards(char* cm){
 
     struct linkedList *sourcePile;
     struct linkedList *targetPile;
+    int from = cm[1] - '0';
+    int to = cm[5] - '0';
+    if(l == 9) {
+        from = cm[1] - '0';
+        to = cm[8] - '0';
+    }
+    switch (from) {
+        case 1:
+            sourcePile = &C1;
+            if(cm[0] == 'F'){
+                sourcePile= &F1;
+            }
+            break;
+        case 2:
+            sourcePile = &C2;
+            if(cm[0] == 'F'){
+                sourcePile= &F2;
+            }
+            break;
+        case 3:
+            sourcePile = &C3;
+            if(cm[0] == 'F'){
+                sourcePile= &F3;
+            }
+            break;
+        case 4:
+            sourcePile = &C4;
+            if(cm[0] == 'F'){
+                sourcePile= &F4;
+            }
+            break;
+        case 5:
+            sourcePile = &C5;
+            break;
+        case 6:
+            sourcePile = &C6;
+            break;
+        default:
+            sourcePile = &C7;
+            break;
+    }
+
+    switch (to) {
+        case 1:
+            targetPile = &C1;
+            if(cm[4] == 'F'){
+                targetPile= &F1;
+            }
+            break;
+        case 2:
+            targetPile = &C2;
+            if(cm[4] == 'F'){
+                targetPile= &F2;
+            }
+            break;
+        case 3:
+            targetPile = &C3;
+            if(cm[4] == 'F'){
+                targetPile= &F3;
+            }
+            break;
+        case 4:
+            targetPile = &C4;
+            if(cm[4] == 'F'){
+                targetPile= &F4;
+            }
+            break;
+        case 5:
+            targetPile = &C5;
+            break;
+        case 6:
+            targetPile = &C6;
+            break;
+        default:
+            targetPile = &C7;
+            break;
+    }
+
+
+    char desiredCard[2];
+
+
+
+    struct node* fromCard;
     if(l == 9){
-        int from = cm[1] - '0';
-        int to = cm[8] - '0';
-
-        switch (from) {
-            case 1:
-                sourcePile = &C1;
-                break;
-            case 2:
-                sourcePile = &C2;
-                break;
-            case 3:
-                sourcePile = &C3;
-                break;
-            case 4:
-                sourcePile = &C4;
-                break;
-            case 5:
-                sourcePile = &C5;
-                break;
-            case 6:
-                sourcePile = &C6;
-                break;
-            default:
-                sourcePile = &C7;
-                break;
-        }
-
-        switch (to) {
-            case 1:
-                targetPile = &C1;
-                break;
-            case 2:
-                targetPile = &C2;
-                break;
-            case 3:
-                targetPile = &C3;
-                break;
-            case 4:
-                targetPile = &C4;
-                break;
-            case 5:
-                targetPile = &C5;
-                break;
-            case 6:
-                targetPile = &C6;
-                break;
-            default:
-                targetPile = &C7;
-                break;
-        }
-
-
-        char desiredCard[2];
-        desiredCard[0] = cm[3];
-        desiredCard[1] = cm[4];
-
         enum suitType st;
         int cardValue = 0;
+        desiredCard[0] = cm[3];
+        desiredCard[1] = cm[4];
         switch (desiredCard[1]) {
             case 'H':
                 st=hearts;
@@ -738,40 +807,62 @@ char* moveCards(char* cm){
                 cardValue = desiredCard[0]-'0';
                 break;
         }
-        struct node* fromCard = findElement(sourcePile, cardValue, st);
-        struct node* toCard = findLastElement(targetPile);
+        fromCard = findElement(sourcePile, cardValue, st);
+    } else{
+        fromCard = findLastElement(sourcePile);
+    }
 
-        if(fromCard == NULL || !fromCard->visible ){
-            return "No such card in source pile!";
-        } else if(toCard != NULL){
+
+    struct node* toCard = findLastElement(targetPile);
+
+    if(fromCard == NULL || !fromCard->visible ){
+        return "No such card in source pile!";
+    } else if(toCard != NULL){
+        if(l == 9){
             if(fromCard->cardValue != toCard->cardValue-1){
                 return "Source card must be 1 lower that target card";
             }
             if(fromCard->suit ==  toCard->suit) {
+                return "Suit types must be different!";
+            }
+        } else {
+            if(cm[4] == 'F' && toCard != NULL){
+                if(fromCard->suit != toCard->suit){
+                    return "All cards in a foundation must have the same suit!";
+                }
+
+                if(fromCard->cardValue != toCard->cardValue+1){
+                    return "Cards in a foundation must increment by one in rising order!";
+                }
+
+            } else{
+                if(sourcePile->head != fromCard){
+                    return "You can only move from a foundation, if the foundation only HAS one card!";
+                }
+
+                if(fromCard->cardValue != toCard->cardValue-1){
+                    return "Source card must be 1 lower that target card";
+                }
+                if(fromCard->suit ==  toCard->suit) {
                     return "Suit types must be different!";
+                }
             }
-
-
         }
 
 
 
-
-        struct node* card = deleteFrom(sourcePile,cardValue,st);
-        if(targetPile->head == NULL){
-            targetPile->head = card;
-        } else{
-            struct node *current = targetPile->head;
-            while(current->next != NULL){
-                current = current->next;
-            }
-            current->next = card;
-        }
-
-    } else{
-        return "Not implemented";
     }
 
+    struct node* card = deleteFrom(sourcePile,fromCard->cardValue,fromCard->suit);
+    if(targetPile->head == NULL){
+        targetPile->head = card;
+    } else{
+        struct node *current = targetPile->head;
+        while(current->next != NULL){
+            current = current->next;
+        }
+        current->next = card;
+    }
 
     return "Moved cards";
 }
