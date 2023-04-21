@@ -752,19 +752,14 @@ char* moveCards(char* cm){
 
         if(fromCard == NULL || !fromCard->visible ){
             return "No such card in source pile!";
-        } else{
-            if(fromCard->cardValue >= toCard->cardValue){
-                return "Source card must be lower that target card";
+        } else if(toCard != NULL){
+            if(fromCard->cardValue != toCard->cardValue-1){
+                return "Source card must be 1 lower that target card";
             }
-            if((fromCard->suit == hearts || fromCard->suit == diamonds ) &&
-            (toCard->suit == hearts || toCard->suit == diamonds)){
-                    return "Unmatching suit types!";
+            if(fromCard->suit ==  toCard->suit) {
+                    return "Suit types must be different!";
             }
 
-            if((fromCard->suit == spades || fromCard->suit == clubs ) &&
-               (toCard->suit == spades || toCard->suit == clubs)){
-                return "Unmatching suit types!";
-            }
 
         }
 
