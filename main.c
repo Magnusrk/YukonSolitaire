@@ -363,6 +363,9 @@ void showColumn(struct linkedList *col){
 
 //Reveals all cards
 char *showCards(){
+    if(A.head == NULL){
+        return "ERROR: No deck loaded";
+    }
     showColumn(&C1);
     showColumn(&C2);
     showColumn(&C3);
@@ -378,12 +381,15 @@ char *showCards(){
 // Right now they get inserted in reversed order (can be fixed by changing the insert() method)
 char* loadCardDeck(char* name){
 
+    FILE *filePointer;
+
     if (access(name, F_OK) != 0) {
-        //Implement create new deck if file doesn't exists
-        return "Error: File doesn't exist";
+        filePointer = fopen("DefaultDeck.txt", "r");
+    } else {
+        filePointer = fopen(name, "r");
     }
 
-    FILE *filePointer = fopen(name, "r");
+
     char line[256];
     int cardIndex = 1;
 
@@ -471,7 +477,15 @@ char* loadCardDeck(char* name){
 
 // Should save the cards in the columns to a file
 char* saveCardDeck(char* filename){
-    FILE  *fb = fopen(filename, "w");
+
+    FILE *fb;
+
+    if (access(filename, F_OK) != 0) {
+        fb = fopen("card.txt", "w");
+    } else {
+        fb = fopen(filename, "w");
+    }
+
     struct node *el = A.head;
 
     while (el != NULL){
@@ -517,15 +531,20 @@ char* saveCardDeck(char* filename){
 }
 
 char* splitCards(char* splitLine){
-
-    int line;
-    sscanf(splitLine, "%d", &line);
-    if(line >= 52 || line <= 0){
-        return "Error: The line where to split the deck should be between 1 and 51";
-    }
     if(A.head == NULL){
         return "Error: No deck loaded";
     }
+    int line;
+    sscanf(splitLine, "%d", &line);
+    if(line == NULL){
+        srand(time(NULL));
+        line = rand() % 52 + 1;
+        printf("%d",line);
+    }
+    if(line >= 52 || line <= 0){
+        return "Error: The line where to split the deck should be between 1 and 51";
+    }
+
     struct node *el = A.head;
     pile1.head = NULL;
     pile2.head = NULL;
@@ -572,7 +591,7 @@ char* splitCards(char* splitLine){
 
     A.head = splitPile.head;
     updateCardPiles();
-    return "OK";
+    return "Ok";
 }
 
 int columnIndexCalculation(int cardIndex){
