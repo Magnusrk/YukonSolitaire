@@ -977,8 +977,7 @@ int handleInput(){
             status = splitCards(strtok(NULL, " "));
         }else if(strcmp(comm,"SR")==0) {
             status = shuffleRandom();
-        }
-        else{
+        }else{
             status = "Error: Unknown command in startup phase";
         }
     } else if(phase == PLAY || phase == WIN){ //PLAY COMMANDS
