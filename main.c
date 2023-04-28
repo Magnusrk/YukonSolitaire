@@ -539,7 +539,6 @@ char* splitCards(char* splitLine){
     if(line == NULL){
         srand(time(NULL));
         line = rand() % 52 + 1;
-        printf("%d",line);
     }
     if(line >= 52 || line <= 0){
         return "Error: The line where to split the deck should be between 1 and 51";
